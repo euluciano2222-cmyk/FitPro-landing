@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitPro — Software de Gestão para Personal Trainers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:       #106EBE;
+      --primary-dark:  #0A5A9E;
+      --primary-light: rgba(16,110,190,0.10);
+      --accent:        #14B8A6;
+      --accent-light:  rgba(20,184,166,0.12);
+      --bg:            #F8FAFC;
+      --surface:       #FFFFFF;
+      --border:        #E2E8F0;
+      --text:          #0F172A;
+      --muted:         #64748B;
+      --shadow-md:     0 4px 20px rgba(16,110,190,0.12);
+      --shadow-lg:     0 12px 44px rgba(16,110,190,0.16);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.90);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      height: 68px;
+      padding: 0 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800; font-size: 1.3rem;
+      color: var(--primary); text-decoration: none;
+    }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted);
+      font-size: 0.9rem; font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+
+    .btn-nav {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 8px;
+      padding: 0.6rem 1.4rem;
+      font-weight: 600; font-size: 0.875rem;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: background .2s, transform .15s;
+    }
+    .btn-nav:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    /* ── HERO ───────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      padding: 130px 2.5rem 80px;
+      background: var(--surface);
+      background-image: radial-gradient(circle at 1px 1px, #DDE5EF 1px, transparent 0);
+      background-size: 30px 30px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute; top: -180px; right: -180px;
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(16,110,190,0.07) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1160px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--accent-light); color: var(--accent);
+      font-size: 0.72rem; font-weight: 700;
+      padding: .4rem .9rem; border-radius: 999px;
+      text-transform: uppercase; letter-spacing: .07em;
+      margin-bottom: 1.25rem;
+    }
+    .hero-badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.6s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.4; transform:scale(1.4); }
+    }
+
+    .hero-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(2rem, 3.6vw, 3rem);
+      font-weight: 900; line-height: 1.11;
+      color: var(--text); margin-bottom: 1.25rem;
+    }
+    .hero-title em { color: var(--primary); font-style: normal; }
+
+    .hero-sub {
+      color: var(--muted); font-size: 1.05rem;
+      line-height: 1.72; margin-bottom: 2rem; max-width: 460px;
+    }
+
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 10px;
+      padding: .85rem 1.75rem;
+      font-weight: 700; font-size: .95rem;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 16px rgba(16,110,190,.30);
+      transition: all .2s;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(16,110,190,.40);
+    }
+
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 10px; padding: .85rem 1.75rem;
+      font-weight: 600; font-size: .95rem;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: all .2s;
+    }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+    /* ── DASHBOARD MOCKUP (hero) ────────────────── */
+    .dash {
+      background: var(--surface); border-radius: 16px;
+      padding: 1.5rem; border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .dash-badge {
+      position: absolute; top: -13px; right: 22px;
+      background: var(--accent); color: #fff;
+      font-size: .68rem; font-weight: 700;
+      padding: .28rem .8rem; border-radius: 999px;
+    }
+
+    .dash-dots { display: flex; gap: .4rem; margin-bottom: 1.25rem; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background:#FF5F56; } .dot-y { background:#FFBD2E; } .dot-g { background:#27C93F; }
+
+    .dash-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.25rem; }
+
+    .stat-card {
+      background: var(--bg); border-radius: 10px; padding: 1rem;
+    }
+    .stat-lbl { font-size: .7rem; color: var(--muted); font-weight: 500; margin-bottom: .3rem; }
+    .stat-val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.6rem; font-weight: 800; color: var(--text);
+    }
+    .stat-val.blue { color: var(--primary); }
+    .stat-trend { font-size: .68rem; color: var(--accent); font-weight: 600; margin-top: .2rem; }
+
+    .chart-lbl { font-size: .7rem; color: var(--muted); margin-bottom: .5rem; }
+
+    .bars {
+      display: flex; gap: .4rem; align-items: flex-end; height: 70px;
+    }
+    .bar-wrap { flex: 1; height: 100%; display: flex; align-items: flex-end; }
+    .bar {
+      width: 100%; height: 0; border-radius: 3px 3px 0 0;
+      background: var(--primary-light);
+      transition: height 1s cubic-bezier(.34,1.56,.64,1);
+    }
+    .bar.hi { background: var(--accent); }
+
+    .sat-row {
+      display: flex; align-items: center; gap: .75rem;
+      margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+    .sat-track {
+      flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+    }
+    .sat-fill {
+      height: 100%; width: 0; border-radius: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 1.2s ease;
+    }
+    .sat-lbl { font-size: .7rem; color: var(--muted); }
+    .sat-val { font-size: .7rem; font-weight: 700; color: var(--text); }
+
+    /* ── SECTION BASE ───────────────────────────── */
+    .section { padding: 6rem 2.5rem; }
+    .section-inner { max-width: 1160px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: .72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--accent); margin-bottom: .6rem;
+    }
+    .s-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.6rem, 2.8vw, 2.25rem);
+      font-weight: 800; color: var(--text); margin-bottom: .9rem;
+    }
+    .s-sub { color: var(--muted); font-size: 1rem; line-height: 1.72; max-width: 560px; }
+
+    /* ── FEATURES ───────────────────────────────── */
+    .feat-section { background: var(--bg); }
+    .feat-header  { margin-bottom: 3rem; }
+
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 14px; padding: 2rem;
+      opacity: 0; transform: translateY(24px);
+      transition: box-shadow .25s, transform .25s;
+    }
+    .feat-card.vis { opacity:1; transform:translateY(0); transition: opacity .5s ease, transform .5s ease, box-shadow .25s; }
+    .feat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+    .feat-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--accent-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1.2rem;
+    }
+    .feat-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: .45rem;
+    }
+    .feat-desc { color: var(--muted); font-size: .875rem; line-height: 1.65; }
+
+    /* ── PREVIEW SECTION ────────────────────────── */
+    .prev-section { background: var(--surface); }
+
+    .prev-layout {
+      display: grid; grid-template-columns: 1fr 1.2fr;
+      gap: 4.5rem; align-items: center;
+    }
+
+    .prev-dash {
+      background: var(--surface); border-radius: 16px;
+      padding: 1.5rem; border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      opacity: 0; transform: translateX(-28px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .prev-dash.vis { opacity:1; transform:translateX(0); }
+
+    .prev-text {
+      opacity: 0; transform: translateX(28px);
+      transition: opacity .6s ease .2s, transform .6s ease .2s;
+    }
+    .prev-text.vis { opacity:1; transform:translateX(0); }
+
+    .prev-stats {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: .75rem; margin-bottom: 1.25rem;
+    }
+    .p-stat {
+      background: var(--bg); border-radius: 10px;
+      padding: .9rem; text-align: center;
+    }
+    .p-stat-val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.3rem; font-weight: 800; color: var(--primary);
+    }
+    .p-stat-lbl { font-size: .65rem; color: var(--muted); margin-top: .2rem; }
+
+    .pbars {
+      display: flex; gap: .5rem; align-items: flex-end; height: 100px;
+    }
+    .pbar-col { flex:1; display:flex; flex-direction:column; justify-content:flex-end; }
+    .pbar {
+      width: 100%; height: 0; border-radius: 4px 4px 0 0;
+      transition: height 1.2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .pbar-mo {
+      font-size: .6rem; color: var(--muted); text-align: center; margin-top: .3rem;
+    }
+
+    .checklist { list-style:none; display:flex; flex-direction:column; gap:.85rem; margin-top:2rem; }
+    .checklist li { display:flex; align-items:center; gap:.75rem; font-size:.93rem; color:var(--text); }
+    .check-ic {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--accent-light); color: var(--accent);
+      display: flex; align-items:center; justify-content:center;
+      font-size: .7rem; font-weight:800; flex-shrink:0;
+    }
+
+    /* ── PRICING ────────────────────────────────── */
+    .price-section { background: var(--bg); }
+    .price-head { text-align:center; margin-bottom:2.5rem; }
+    .price-head .s-sub { margin: 0 auto; }
+
+    .toggle-row {
+      display: flex; align-items:center; justify-content:center;
+      gap: 1rem; margin-top: 1.5rem;
+    }
+    .tog-lbl { font-size:.875rem; color:var(--muted); font-weight:500; }
+    .tog-lbl.on { color:var(--text); font-weight:600; }
+
+    .tog-btn {
+      width:48px; height:26px; border-radius:999px;
+      background:var(--primary); border:none; cursor:pointer;
+      position:relative; transition:background .2s;
+    }
+    .tog-thumb {
+      width:20px; height:20px; background:#fff; border-radius:50%;
+      position:absolute; top:3px; left:3px;
+      transition:left .22s;
+    }
+    .tog-btn.on .tog-thumb { left:25px; }
+
+    .disc-badge {
+      background:var(--accent); color:#fff;
+      font-size:.68rem; font-weight:700;
+      padding:.2rem .6rem; border-radius:999px;
+    }
+
+    .price-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:1.5rem; max-width:900px; margin:0 auto;
+    }
+
+    .price-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:16px; padding:2rem;
+      opacity:0; transform:translateY(24px);
+      transition: box-shadow .25s, transform .25s;
+    }
+    .price-card.vis { opacity:1; transform:translateY(0); transition:opacity .5s ease, transform .5s ease, box-shadow .25s; }
+    .price-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+    .price-card.feat {
+      background:var(--primary); border-color:var(--primary);
+    }
+    .price-card.feat:hover { box-shadow:0 12px 44px rgba(16,110,190,.40); }
+
+    .plan-tag { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--accent); margin-bottom:.45rem; }
+    .price-card.feat .plan-tag { color:rgba(255,255,255,.65); }
+
+    .plan-name { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.2rem; font-weight:800; color:var(--text); margin-bottom:1rem; }
+    .price-card.feat .plan-name { color:#fff; }
+
+    .plan-amount { font-family:'Plus Jakarta Sans',sans-serif; font-size:2.5rem; font-weight:900; color:var(--text); }
+    .price-card.feat .plan-amount { color:#fff; }
+    .plan-period { font-size:.85rem; color:var(--muted); }
+    .price-card.feat .plan-period { color:rgba(255,255,255,.55); }
+
+    .plan-feats { list-style:none; display:flex; flex-direction:column; gap:.6rem; margin:1.5rem 0; }
+    .plan-feats li { font-size:.875rem; color:var(--muted); display:flex; align-items:center; gap:.5rem; }
+    .price-card.feat .plan-feats li { color:rgba(255,255,255,.85); }
+    .plan-feats li::before { content:'✓'; color:var(--accent); font-weight:800; font-size:.72rem; }
+    .price-card.feat .plan-feats li::before { color:rgba(255,255,255,.8); }
+
+    .btn-plan {
+      width:100%; padding:.85rem; border-radius:10px;
+      font-weight:700; font-size:.875rem; cursor:pointer;
+      font-family:'Inter',sans-serif;
+      background:transparent; color:var(--primary);
+      border:1.5px solid var(--border);
+      transition:all .2s;
+    }
+    .btn-plan:hover { border-color:var(--primary); background:var(--primary-light); }
+    .btn-plan.feat { background:#fff; color:var(--primary); border-color:#fff; }
+    .btn-plan.feat:hover { background:rgba(255,255,255,.88); }
+
+    /* ── FAQ ────────────────────────────────────── */
+    .faq-section { background:var(--surface); }
+    .faq-inner   { max-width:720px; margin:0 auto; }
+    .faq-head    { margin-bottom:2.5rem; }
+
+    .faq-item {
+      border-bottom:1px solid var(--border);
+      opacity:0; transform:translateY(16px);
+      transition:opacity .4s ease, transform .4s ease;
+    }
+    .faq-item.vis { opacity:1; transform:translateY(0); }
+
+    .faq-q {
+      width:100%; background:none; border:none;
+      padding:1.25rem 0; text-align:left;
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:1rem; font-weight:700; color:var(--text);
+      cursor:pointer; display:flex; justify-content:space-between;
+      align-items:center; gap:1rem;
+    }
+    .faq-chevron {
+      width:22px; height:22px; border-radius:50%;
+      background:var(--bg); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.65rem; color:var(--muted); flex-shrink:0;
+      transition:transform .3s, background .2s, color .2s;
+    }
+    .faq-item.open .faq-chevron {
+      transform:rotate(180deg);
+      background:var(--accent); border-color:var(--accent); color:#fff;
+    }
+    .faq-a { max-height:0; overflow:hidden; transition:max-height .35s ease; }
+    .faq-a-inner { padding-bottom:1.25rem; color:var(--muted); font-size:.9rem; line-height:1.72; }
+
+    /* ── FOOTER ─────────────────────────────────── */
+    .footer { background:var(--text); padding:3rem 2.5rem; }
+    .footer-inner {
+      max-width:1160px; margin:0 auto;
+      display:flex; justify-content:space-between;
+      align-items:center; flex-wrap:wrap; gap:1.5rem;
+    }
+    .footer-logo { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.2rem; color:#fff; }
+    .footer-links { display:flex; gap:2rem; list-style:none; }
+    .footer-links a { color:rgba(255,255,255,.55); text-decoration:none; font-size:.875rem; transition:color .2s; }
+    .footer-links a:hover { color:#fff; }
+    .footer-copy { font-size:.78rem; color:rgba(255,255,255,.35); }
+
+    /* ── RESPONSIVE ─────────────────────────────── */
+    @media(max-width:900px) {
+      .hero-inner    { grid-template-columns:1fr; }
+      .prev-layout   { grid-template-columns:1fr; }
+      .nav-links     { display:none; }
+      .prev-stats    { grid-template-columns:repeat(2,1fr); }
+      .footer-inner  { flex-direction:column; text-align:center; }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      *, *::before, *::after { animation:none!important; transition:none!important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="nav">
+  <a href="#" class="nav-logo">FitPro</a>
+  <ul class="nav-links">
+    <li><a href="#features">Recursos</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#pricing">Planos</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <button class="btn-nav">Começar Grátis</button>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Plataforma Completa
+      </div>
+      <h1 class="hero-title">
+        O software que transforma a gestão do seu trabalho como <em>Personal Trainer.</em>
+      </h1>
+      <p class="hero-sub">
+        Gerencie alunos, treinos, avaliações físicas, pagamentos e evolução — tudo em uma única plataforma moderna e intuitiva.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary">Começar Gratuitamente</button>
+        <button class="btn-ghost">Agendar Demonstração</button>
+      </div>
+    </div>
+
+    <div class="dash" id="heroDash">
+      <div class="dash-badge">+12 alunos este mês</div>
+      <div class="dash-dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <div class="dash-stats">
+        <div class="stat-card">
+          <div class="stat-lbl">Alunos Ativos</div>
+          <div class="stat-val" id="cnt-alunos">0</div>
+          <div class="stat-trend">↑ 12 este mês</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Faturamento</div>
+          <div class="stat-val blue" id="cnt-rev">R$ 0</div>
+          <div class="stat-trend">↑ 18% vs mês anterior</div>
+        </div>
+      </div>
+      <div class="chart-lbl">Evolução Semanal</div>
+      <div class="bars" id="heroBars"></div>
+      <div class="sat-row">
+        <span class="sat-lbl">Satisfação</span>
+        <div class="sat-track"><div class="sat-fill" id="satFill"></div></div>
+        <span class="sat-val">98%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FEATURES ═══════════ -->
+<section class="section feat-section" id="features">
+  <div class="section-inner">
+    <div class="feat-header">
+      <div class="eyebrow">Recursos</div>
+      <h2 class="s-title">Tudo que você precisa em um só lugar</h2>
+      <p class="s-sub">Do primeiro contato com o aluno ao acompanhamento mensal — o FitPro cobre cada etapa da sua operação.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📋</div>
+        <h3 class="feat-title">Treinos Personalizados</h3>
+        <p class="feat-desc">Monte fichas completas, organize por grupos musculares e envie diretamente para o app do aluno com um clique.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💳</div>
+        <h3 class="feat-title">Controle Financeiro</h3>
+        <p class="feat-desc">Gerencie mensalidades, emita cobranças automáticas e visualize seu faturamento em tempo real no dashboard.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <h3 class="feat-title">Avaliações Físicas</h3>
+        <p class="feat-desc">Registre dados antropométricos, calcule IMC e gere relatórios de evolução prontos para apresentar ao aluno.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📅</div>
+        <h3 class="feat-title">Agenda Inteligente</h3>
+        <p class="feat-desc">Organize horários, envie lembretes automáticos e reduza faltas com confirmação de presença integrada.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔔</div>
+        <h3 class="feat-title">Notificações Automáticas</h3>
+        <p class="feat-desc">Alertas de vencimento, lembretes de treino e comunicados em massa — sem precisar mandar mensagem por mensagem.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📱</div>
+        <h3 class="feat-title">Acesso Mobile</h3>
+        <p class="feat-desc">Plataforma 100% responsiva. Gerencie seus alunos de qualquer lugar, diretamente pelo celular.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PREVIEW / DASHBOARD ═══════════ -->
+<section class="section prev-section" id="dashboard">
+  <div class="section-inner">
+    <div class="prev-layout">
+
+      <div class="prev-dash" id="prevDash">
+        <div class="dash-dots">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+        </div>
+        <div class="prev-stats">
+          <div class="p-stat">
+            <div class="p-stat-val" id="pv-alunos">0</div>
+            <div class="p-stat-lbl">Alunos</div>
+          </div>
+          <div class="p-stat">
+            <div class="p-stat-val" id="pv-treinos">0</div>
+            <div class="p-stat-lbl">Treinos</div>
+          </div>
+          <div class="p-stat">
+            <div class="p-stat-val" id="pv-sat">0%</div>
+            <div class="p-stat-lbl">Satisfação</div>
+          </div>
+        </div>
+        <div class="chart-lbl">Receita Mensal (R$)</div>
+        <div class="pbars" id="prevBars"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:.4rem;">
+          <span style="font-size:.58rem;color:var(--muted)">Jan</span>
+          <span style="font-size:.58rem;color:var(--muted)">Fev</span>
+          <span style="font-size:.58rem;color:var(--muted)">Mar</span>
+          <span style="font-size:.58rem;color:var(--muted)">Abr</span>
+          <span style="font-size:.58rem;color:var(--muted)">Mai</span>
+          <span style="font-size:.58rem;color:var(--muted)">Jun</span>
+        </div>
+      </div>
+
+      <div class="prev-text" id="prevText">
+        <div class="eyebrow">Dados em Tempo Real</div>
+        <h2 class="s-title">Veja seu negócio crescer em tempo real</h2>
+        <p class="s-sub">Métricas que importam, atualizadas automaticamente. Saiba exatamente onde está seu faturamento, quantos alunos ativos você tem e como a satisfação evolui mês a mês.</p>
+        <ul class="checklist">
+          <li><span class="check-ic">✓</span> Dashboard atualizado a cada sessão</li>
+          <li><span class="check-ic">✓</span> Relatórios exportáveis em PDF</li>
+          <li><span class="check-ic">✓</span> Comparativo mensal automático</li>
+          <li><span class="check-ic">✓</span> Alertas de queda de frequência</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PRICING ═══════════ -->
+<section class="section price-section" id="pricing">
+  <div class="section-inner">
+    <div class="price-head">
+      <div class="eyebrow">Planos</div>
+      <h2 class="s-title">Simples, justo, sem surpresas</h2>
+      <p class="s-sub">Comece gratuitamente e escale conforme seu negócio cresce. Cancele quando quiser.</p>
+      <div class="toggle-row">
+        <span class="tog-lbl on" id="lbl-m">Mensal</span>
+        <button class="tog-btn" id="togBtn" onclick="togglePrice()">
+          <div class="tog-thumb"></div>
+        </button>
+        <span class="tog-lbl" id="lbl-a">Anual</span>
+        <span class="disc-badge">-20%</span>
+      </div>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="plan-tag">Starter</div>
+        <div class="plan-name">Básico</div>
+        <div style="margin-bottom:1.5rem;">
+          <span class="plan-amount" id="p-b">R$ 79</span>
+          <span class="plan-period">/mês</span>
+        </div>
+        <ul class="plan-feats">
+          <li>Até 15 alunos</li>
+          <li>Fichas de treino ilimitadas</li>
+          <li>Agenda e lembretes</li>
+          <li>Suporte via chat</li>
+        </ul>
+        <button class="btn-plan">Começar Grátis</button>
+      </div>
+      <div class="price-card feat">
+        <div class="plan-tag">Mais Popular</div>
+        <div class="plan-name">Pro</div>
+        <div style="margin-bottom:1.5rem;">
+          <span class="plan-amount" id="p-p">R$ 149</span>
+          <span class="plan-period">/mês</span>
+        </div>
+        <ul class="plan-feats">
+          <li>Alunos ilimitados</li>
+          <li>Avaliações físicas completas</li>
+          <li>Controle financeiro</li>
+          <li>Relatórios de evolução</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <button class="btn-plan feat">Começar Gratuitamente</button>
+      </div>
+      <div class="price-card">
+        <div class="plan-tag">Para Equipes</div>
+        <div class="plan-name">Premium</div>
+        <div style="margin-bottom:1.5rem;">
+          <span class="plan-amount" id="p-pr">R$ 249</span>
+          <span class="plan-period">/mês</span>
+        </div>
+        <ul class="plan-feats">
+          <li>Tudo do Pro</li>
+          <li>Múltiplos treinadores</li>
+          <li>Dashboard da academia</li>
+          <li>API e integrações</li>
+          <li>Gerente de conta dedicado</li>
+        </ul>
+        <button class="btn-plan">Falar com Vendas</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FAQ ═══════════ -->
+<section class="section faq-section" id="faq">
+  <div class="faq-inner">
+    <div class="faq-head">
+      <div class="eyebrow">FAQ</div>
+      <h2 class="s-title">Dúvidas frequentes</h2>
+    </div>
+    <div id="faqList"></div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">FitPro</div>
+    <ul class="footer-links">
+      <li><a href="#features">Recursos</a></li>
+      <li><a href="#pricing">Planos</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#">Privacidade</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 FitPro. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<script>
+/* ── DATA ──────────────────────────────────────────── */
+const HERO_BARS   = [38,60,44,78,52,90,68]; // index 5 = accent
+const PREV_BARS   = [
+  { h:42, bg:'rgba(16,110,190,.20)' },
+  { h:55, bg:'rgba(16,110,190,.30)' },
+  { h:63, bg:'rgba(16,110,190,.40)' },
+  { h:74, bg:'rgba(16,110,190,.52)' },
+  { h:66, bg:'rgba(16,110,190,.64)' },
+  { h:90, bg:'#14B8A6' },
+];
+const PRICES = {
+  m: { b:'R$ 79', p:'R$ 149', pr:'R$ 249' },
+  a: { b:'R$ 63', p:'R$ 119', pr:'R$ 199' },
+};
+const FAQS = [
+  { q:'O FitPro funciona no celular?',
+    a:'Sim. A plataforma é 100% responsiva e funciona em qualquer dispositivo — celular, tablet ou computador — sem precisar instalar nada.' },
+  { q:'Preciso de cartão de crédito para começar?',
+    a:'Não. O período de teste gratuito de 14 dias não exige nenhum dado de pagamento. Você só cadastra o cartão se decidir continuar.' },
+  { q:'Posso importar meus alunos atuais?',
+    a:'Sim. O FitPro aceita importação via planilha CSV. Em menos de 5 minutos todos os seus alunos já estarão cadastrados na plataforma.' },
+  { q:'E se eu precisar cancelar?',
+    a:'Sem burocracia. Você pode cancelar a qualquer momento pelo próprio painel, sem multa e sem precisar falar com ninguém.' },
+  { q:'Os dados dos meus alunos ficam seguros?',
+    a:'Todos os dados são criptografados e armazenados em servidores com backup diário. O FitPro está em conformidade com a LGPD.' },
+];
+
+/* ── COUNTER ANIMATION ─────────────────────────────── */
+function counter(el, target, pre='', suf='', ms=1200) {
+  const start = performance.now();
+  (function tick(now) {
+    const p = Math.min((now - start) / ms, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = pre + Math.round(e * target).toLocaleString('pt-BR') + suf;
+    if (p < 1) requestAnimationFrame(tick);
+  })(start);
+}
+
+/* ── BUILD HERO BARS ───────────────────────────────── */
+const heroBarsEl = document.getElementById('heroBars');
+HERO_BARS.forEach((h, i) => {
+  const w = document.createElement('div'); w.className = 'bar-wrap';
+  const b = document.createElement('div');
+  b.className = 'bar' + (i === 5 ? ' hi' : '');
+  b.dataset.h = h;
+  w.appendChild(b); heroBarsEl.appendChild(w);
+});
+
+/* ── BUILD PREVIEW BARS ────────────────────────────── */
+const prevBarsEl = document.getElementById('prevBars');
+PREV_BARS.forEach(d => {
+  const col = document.createElement('div'); col.className = 'pbar-col';
+  const b   = document.createElement('div'); b.className = 'pbar';
+  b.dataset.h = d.h; b.style.background = d.bg;
+  col.appendChild(b); prevBarsEl.appendChild(col);
+});
+
+/* ── HERO ANIMATE ON LOAD ──────────────────────────── */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('#heroBars .bar').forEach(b => { b.style.height = b.dataset.h + '%'; });
+    counter(document.getElementById('cnt-alunos'), 47);
+    counter(document.getElementById('cnt-rev'),    8450, 'R$ ', '', 1400);
+    setTimeout(() => { document.getElementById('satFill').style.width = '98%'; }, 300);
+  }, 500);
+});
+
+/* ── INTERSECTION OBSERVER ─────────────────────────── */
+let prevDone = false;
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+
+    if (el.classList.contains('feat-card') ||
+        el.classList.contains('price-card') ||
+        el.classList.contains('faq-item')) {
+      el.classList.add('vis');
+    }
+
+    if (el.id === 'prevDash' && !prevDone) {
+      prevDone = true;
+      el.classList.add('vis');
+      document.getElementById('prevText').classList.add('vis');
+      setTimeout(() => {
+        document.querySelectorAll('#prevBars .pbar').forEach(b => { b.style.height = b.dataset.h + '%'; });
+        counter(document.getElementById('pv-alunos'),  47);
+        counter(document.getElementById('pv-treinos'), 214);
+        counter(document.getElementById('pv-sat'),     98, '', '%');
+      }, 350);
+    }
+
+    obs.unobserve(el);
+  });
+}, { threshold: 0.14 });
+
+document.querySelectorAll('.feat-card, .price-card').forEach(el => obs.observe(el));
+obs.observe(document.getElementById('prevDash'));
+
+/* ── FAQ ───────────────────────────────────────────── */
+const faqList = document.getElementById('faqList');
+FAQS.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'faq-item';
+  div.innerHTML = `
+    <button class="faq-q" onclick="toggleFaq(${i})">
+      <span>${item.q}</span>
+      <span class="faq-chevron" id="chev-${i}">▼</span>
+    </button>
+    <div class="faq-a" id="ans-${i}">
+      <div class="faq-a-inner">${item.a}</div>
+    </div>`;
+  faqList.appendChild(div);
+  obs.observe(div);
+});
+
+function toggleFaq(idx) {
+  document.querySelectorAll('.faq-item').forEach((item, i) => {
+    const ans   = document.getElementById(`ans-${i}`);
+    const isOpen = item.classList.contains('open');
+    if (i === idx) {
+      item.classList.toggle('open', !isOpen);
+      ans.style.maxHeight = isOpen ? '0' : ans.scrollHeight + 'px';
+    } else {
+      item.classList.remove('open');
+      ans.style.maxHeight = '0';
+    }
+  });
+}
+
+/* ── PRICING TOGGLE ────────────────────────────────── */
+let annual = false;
+function togglePrice() {
+  annual = !annual;
+  document.getElementById('togBtn').classList.toggle('on', annual);
+  document.getElementById('lbl-m').classList.toggle('on', !annual);
+  document.getElementById('lbl-a').classList.toggle('on',  annual);
+  const set = annual ? PRICES.a : PRICES.m;
+  document.getElementById('p-b').textContent  = set.b;
+  document.getElementById('p-p').textContent  = set.p;
+  document.getElementById('p-pr').textContent = set.pr;
+}
+</script>
+</body>
+</html>
